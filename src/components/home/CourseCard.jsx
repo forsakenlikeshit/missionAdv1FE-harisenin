@@ -67,7 +67,7 @@ function CourseCard({
           </small>
         </span>
 
-        <p className="price">{price}</p>
+        <p className="price">$ {price}</p>
       </div>
     </article>
   );

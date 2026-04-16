@@ -1,11 +1,11 @@
 import './Loading.css';
 
-function Loading() {
+export default Loading;
+
+function Loading({ variant = 'overlay' }) {
   return (
-    <div className="layout-loading">
+    <div className={variant === 'overlay' ? 'loading-overlay' : 'loading-inline'}>
       <div className="spinner"></div>
     </div>
   );
 }
-
-export default Loading;

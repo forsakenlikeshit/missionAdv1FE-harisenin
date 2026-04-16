@@ -1,28 +1,17 @@
 import { useEffect, useState } from 'react';
 import CourseCard from '../components/home/CourseCard';
 import Button from '../components/ui/Button';
-import { getCourses } from '../services/api/Crud';
+import Loading from '../components/ui/Loading';
+import { useCourseStore } from '../store/courseStore';
 import './Home.css';
 
 const tabs = ['Semua Kelas', 'Pemasaran', 'Desain', 'Pengembangan Diri', 'Bisnis'];
 
 function Home() {
   const [activeTab, setActiveTab] = useState('Semua Kelas');
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { courses, loading, fetchCourses } = useCourseStore();
 
-  // FETCH COURSES
   useEffect(() => {
-    const fetchCourses = async () => {
-      setLoading(true);
-      try {
-        const data = await getCourses();
-        setCourses(data);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCourses();
   }, []);
 
@@ -69,13 +58,13 @@ function Home() {
 
       {/* COURSE GRID */}
       <section className="course-grid">
-        {loading && <p>Loading...</p>}
-
-        {!loading && courses.length === 0 && <p className="empty">Belum ada course.</p>}
-
-        {courses.map((course) => (
-          <CourseCard key={course.id} {...course} />
-        ))}
+        {loading ? (
+          <Loading variant="inline" />
+        ) : courses.length === 0 ? (
+          <p className="empty">Belum ada course.</p>
+        ) : (
+          courses.map((course) => <CourseCard key={course.id} {...course} />)
+        )}
       </section>
 
       {/* NEWSLETTER */}

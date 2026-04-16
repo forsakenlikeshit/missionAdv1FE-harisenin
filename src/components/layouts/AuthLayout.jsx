@@ -1,22 +1,16 @@
-import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useUIStore } from '../../store/uiStore';
 import Loading from '../ui/Loading';
 import Navbar from './Navbar';
 
 function AuthLayout() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }, []);
+  const { isLoading } = useUIStore();
 
   return (
     <>
       <Navbar variant="auth" />
       <main className="auth-main">
-        {loading && <Loading />}
+        {isLoading && <Loading />}
         <Outlet />
       </main>
     </>

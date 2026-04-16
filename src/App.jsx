@@ -1,14 +1,16 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AuthLayout from './components/layouts/AuthLayout';
 import MainLayout from './components/layouts/MainLayout';
+import Loader from './components/ui/Loader';
+import CourseManager from './pages/CourseManager';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import CourseManager from './pages/CourseManager';
 
 function App() {
   return (
     <BrowserRouter>
+      <Loader />
       <Routes>
         {/* MAIN LAYOUT */}
         <Route element={<MainLayout />}>

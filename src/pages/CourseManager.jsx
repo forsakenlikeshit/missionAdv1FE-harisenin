@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import CourseCard from '../components/home/CourseCard';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import { createCourse, deleteCourse, getCourses, updateCourse } from '../services/api/Crud';
+import Loading from '../components/ui/Loading';
+import { useCourseStore } from '../store/courseStore';
 import './CourseManager.css';
 
 const initialForm = {
@@ -17,72 +18,58 @@ const initialForm = {
 };
 
 function CourseManager() {
-  const [courses, setCourses] = useState([]);
+  const { courses, loading, fetchCourses, addCourse, editCourse, removeCourse } = useCourseStore();
+
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  // FETCH COURSES
-  const fetchCourses = async () => {
-    setLoading(true);
-    try {
-      const data = await getCourses();
-      setCourses(data);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchCourses();
   }, []);
 
-  // INPUT HANDLER
+  // INPUT
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // BUILD PAYLOAD
-  const buildPayload = () => ({
-    title: form.title,
-    description: form.description,
-    price: form.price,
-    authorName: form.authorName,
-    authorJob: form.authorJob,
-    authorCompany: form.authorCompany,
-    thumbnail: form.thumbnail,
-    authorAvatar: form.authorAvatar,
+  const buildCreatePayload = () => ({
+    ...form,
     rating: 0,
     reviews: 0,
   });
 
-  // VALIDATION
+  const buildUpdatePayload = () => ({
+    ...form,
+  });
+
   const isFormValid = Object.values(form).every((v) => v !== '');
 
-  // SUBMIT (CREATE/UPDATE)
+  // SUBMIT
   const handleSubmit = async () => {
     if (!isFormValid) {
       alert('Isi semua field!');
       return;
     }
 
-    const payload = buildPayload();
-
     if (editingId) {
-      await updateCourse(editingId, payload);
+      const existing = courses.find((c) => c.id === editingId);
+      const payload = {
+        ...existing,
+        ...buildUpdatePayload(),
+      };
+
+      await editCourse(editingId, payload);
     } else {
-      await createCourse(payload);
+      await addCourse(buildCreatePayload());
     }
 
-    await fetchCourses();
     resetForm();
   };
 
   // DELETE
   const handleDelete = async (id) => {
-    await deleteCourse(id);
-    await fetchCourses();
+    await removeCourse(id);
   };
 
   // EDIT
@@ -112,81 +99,108 @@ function CourseManager() {
       <div className="course-form">
         <h1>Manager Kelas</h1>
 
-        <Input label="Judul Kelas" name="title" value={form.title} onChange={handleInputChange} />
         <Input
-          label="Deskripsi"
+          name="title"
+          label="Judul Kelas"
+          className="input-manager"
+          value={form.title}
+          onChange={handleInputChange}
+        />
+        <Input
           name="description"
+          label="Deskripsi"
+          className="input-manager"
           value={form.description}
           onChange={handleInputChange}
         />
-        <Input label="Harga" name="price" value={form.price} onChange={handleInputChange} />
         <Input
-          label="Nama Pengajar"
+          name="price"
+          label="Harga"
+          className="input-manager"
+          value={form.price}
+          onChange={handleInputChange}
+        />
+        <Input
           name="authorName"
+          label="Nama Pengajar"
+          className="input-manager"
           value={form.authorName}
           onChange={handleInputChange}
         />
         <Input
-          label="Jabatan"
           name="authorJob"
+          label="Jabatan"
+          className="input-manager"
           value={form.authorJob}
           onChange={handleInputChange}
         />
         <Input
-          label="Perusahaan"
           name="authorCompany"
+          label="Perusahaan"
+          className="input-manager"
           value={form.authorCompany}
           onChange={handleInputChange}
         />
 
-        {/* IMAGE URL INPUT */}
         <Input
-          label="Thumbnail URL"
           name="thumbnail"
+          label="Thumbnail URL"
+          className="input-manager"
           value={form.thumbnail}
           onChange={handleInputChange}
         />
 
-        {form.thumbnail && (
-          <img src={form.thumbnail} alt="thumbnail preview" className="preview-img small" />
-        )}
+        {form.thumbnail && <img src={form.thumbnail} alt="preview" className="preview-img small" />}
 
         <Input
-          label="Author Avatar URL"
           name="authorAvatar"
+          label="Author Avatar URL"
+          className="input-manager"
           value={form.authorAvatar}
           onChange={handleInputChange}
         />
 
         {form.authorAvatar && (
-          <img src={form.authorAvatar} alt="avatar preview" className="preview-img avatar small" />
+          <img src={form.authorAvatar} alt="preview" className="preview-img avatar small" />
         )}
 
-        <Button onClick={handleSubmit}>{editingId ? 'Update' : 'Submit'}</Button>
+        <Button variant="primary" className="btn-submit" onClick={handleSubmit}>
+          {editingId ? 'Update' : 'Submit'}
+        </Button>
 
         {editingId && (
-          <Button variant="secondary" onClick={resetForm}>
+          <Button variant="primary-outline" className="btn-cancel" onClick={resetForm}>
             Batal
           </Button>
         )}
       </div>
 
-      {/* GRID */}
+      {/* COURSE GRID */}
       <div className="course-grid">
-        {loading && <p>Loading...</p>}
+        {loading ? (
+          <Loading variant="inline" />
+        ) : courses.length === 0 ? (
+          <p className="empty">Belum ada course.</p>
+        ) : (
+          courses.map((course) => (
+            <div key={course.id} className="course-card-container">
+              <CourseCard {...course} />
 
-        {courses.map((course) => (
-          <div key={course.id} className="course-card-container">
-            <CourseCard {...course} />
-
-            <div className="course-card-btn">
-              <Button onClick={() => handleEdit(course)}>Edit</Button>
-              <Button variant="danger" onClick={() => handleDelete(course.id)}>
-                Hapus
-              </Button>
+              <div className="course-card-btn">
+                <Button variant="secondary" className="btn-edit" onClick={() => handleEdit(course)}>
+                  Edit
+                </Button>
+                <Button
+                  variant="danger"
+                  className="btn-edit"
+                  onClick={() => handleDelete(course.id)}
+                >
+                  Hapus
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
