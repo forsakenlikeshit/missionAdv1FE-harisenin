@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Hamburger from '../../assets/images/hamburger.png';
 import Logo from '../../assets/images/logo.png';
 import Profile from '../../assets/images/profilepic.png';
@@ -25,9 +25,9 @@ function Navbar({ variant = 'main', isLoggedIn = false }) {
               Kategori
             </a>
 
-            <a href="#" className="to-category" onClick={() => navigate('/manager')}>
+            <Link to="/manager" className="to-category">
               Admin
-            </a>
+            </Link>
 
             {!isLoggedIn ? (
               <>
