@@ -9,7 +9,7 @@ const avatars = Object.entries(authorAvatars)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, module]) => module.default);
 
-const courses = [
+const defaultCourses = [
   {
     id: 1,
     thumbnail: thumbnails[0],
@@ -134,4 +134,4 @@ const courses = [
   },
 ];
 
-export default courses;
+export default defaultCourses;

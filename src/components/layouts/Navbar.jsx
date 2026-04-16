@@ -25,6 +25,10 @@ function Navbar({ variant = 'main', isLoggedIn = false }) {
               Kategori
             </a>
 
+            <a href="#" className="to-category" onClick={() => navigate('/manager')}>
+              Admin
+            </a>
+
             {!isLoggedIn ? (
               <>
                 <Button

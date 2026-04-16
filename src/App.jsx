@@ -4,6 +4,7 @@ import MainLayout from './components/layouts/MainLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CourseManager from './pages/CourseManager';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         {/* MAIN LAYOUT */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/manager" element={<CourseManager />} />
         </Route>
 
         {/* AUTH LAYOUT */}

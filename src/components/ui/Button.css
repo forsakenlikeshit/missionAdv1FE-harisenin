@@ -42,3 +42,9 @@
   color: var(--secondary);
   border: 1px solid var(--secondary);
 }
+
+/* DANGER */
+.btn-danger {
+  background-color: var(--danger);
+  color: var(--light);
+}

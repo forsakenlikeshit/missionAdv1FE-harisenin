@@ -1,13 +1,30 @@
-import { useState } from 'react';
-import CourseCard from '../components//home/CourseCard';
+import { useEffect, useState } from 'react';
+import CourseCard from '../components/home/CourseCard';
 import Button from '../components/ui/Button';
-import courses from '../data/courses';
+import { getCourses } from '../services/api/Crud';
 import './Home.css';
 
 const tabs = ['Semua Kelas', 'Pemasaran', 'Desain', 'Pengembangan Diri', 'Bisnis'];
 
 function Home() {
   const [activeTab, setActiveTab] = useState('Semua Kelas');
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // FETCH COURSES
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setLoading(true);
+      try {
+        const data = await getCourses();
+        setCourses(data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   return (
     <>
@@ -52,6 +69,10 @@ function Home() {
 
       {/* COURSE GRID */}
       <section className="course-grid">
+        {loading && <p>Loading...</p>}
+
+        {!loading && courses.length === 0 && <p className="empty">Belum ada course.</p>}
+
         {courses.map((course) => (
           <CourseCard key={course.id} {...course} />
         ))}

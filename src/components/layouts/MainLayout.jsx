@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Loading from '../ui/Loading';
 import Footer from './Footer';
 import './MainLayout.css';
